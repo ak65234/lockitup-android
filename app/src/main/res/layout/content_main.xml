@@ -18,6 +18,8 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:scaleType="fitCenter"
+            android:layout_centerHorizontal="true"
+            android:paddingVertical="20dp"
             android:src="@drawable/locked" />
         <Button
             android:layout_width="wrap_content"

@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity
     // Password for the private key in the KeyStore
     private static final String KEYSTORE_PASSWORD = "FAKE";
     // Certificate and key aliases in the KeyStore
-    private static final String CERTIFICATE_ID = "default";
+    private static final String CERTIFICATE_ID = "FAKE";
     private String LWtopicName = "FAKE";
     AWSIotClient mIotAndroidClient;
     AWSIotMqttManager mqttManager;
@@ -216,6 +216,10 @@ public class MainActivity extends AppCompatActivity
                 }
             }).start();
         }
+        //just get it connected when opening
+        But_Connection.performClick();
+        But_Connection.setClickable(false); //dont let it be able to press again
+
 
 
     }
@@ -306,6 +310,7 @@ public class MainActivity extends AppCompatActivity
                                                                     String message = new String(data, "UTF-8");
                                                                     CurrentStat.setText(message);
                                                                     currentLockStatus = message;
+
                                                                 } catch (UnsupportedEncodingException e) {
                                                                     Log.e(LOG_TAG, "Message encoding error.", e);
                                                                 }
@@ -346,10 +351,13 @@ public class MainActivity extends AppCompatActivity
             final String topic = "LockStatus";
             final String msg;
             try {
-                if(currentLockStatus==null ||currentLockStatus.equals("Locked")){
+                if(currentLockStatus==null || currentLockStatus.equals("Locked")){
                     msg = "Unlocked";
+                    But_Lock.setImageResource(R.drawable.unlocked);
+
                 }else{
                     msg = "Locked";
+                    But_Lock.setImageResource(R.drawable.locked);
                 }
                 mqttManager.publishString(msg, topic, AWSIotMqttQos.QOS0);
             } catch (Exception e) {
