@@ -30,10 +30,11 @@
         android:layout_height="112dp"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
+        android:visibility="invisible"
         android:tint="@android:color/holo_green_light"
         app:backgroundTint="@android:color/holo_blue_dark"
         app:layout_anchor="@+id/include2"
-        app:layout_anchorGravity="right|center"
+        app:layout_anchorGravity="right|bottom"
         app:srcCompat="@android:drawable/ic_lock_lock"
         tools:layout_editor_absoluteX="110dp" />
 

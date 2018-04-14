@@ -1,6 +1,7 @@
 package com.example.cj.lockscreen;
 
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -70,10 +71,13 @@ public class MainActivity extends AppCompatActivity
     String keystorePassword;
     KeyStore clientKeyStore = null;
     String certificateId;
+    private String currentLockStatus;
     CognitoCachingCredentialsProvider credentialsProvider;
 
     //Button But_Lock;
     ImageButton But_Connection;
+    ImageButton But_Lock;
+    TextView CurrentStat;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,7 +109,9 @@ public class MainActivity extends AppCompatActivity
         //Button But_Lock = (Button) findViewById(R.id.But)
         But_Connection = (ImageButton) findViewById(R.id.But_Connection);
         But_Connection.setOnClickListener(connectClick);
-
+        But_Lock = (ImageButton) findViewById(R.id.But_ChangeLockStatus);
+        But_Lock.setOnClickListener(pushToLock);
+        CurrentStat = (TextView) findViewById(R.id.Text_Status);
 
         //AWS INITS
         //create random client ID (each account needs to be unique)
@@ -285,7 +291,31 @@ public class MainActivity extends AppCompatActivity
                                     But_Connection.setColorFilter(Color.parseColor("#e83535"));
                                 } else if (status == AWSIotMqttClientStatus.Connected) {
                                     But_Connection.setColorFilter(Color.parseColor("#099904"));
-
+                                    //also try to subscribe now since we are connecting
+                                    final String topic = "LockStatus";
+                                    Log.d(LOG_TAG, "topic = " + topic);
+                                    try {
+                                        mqttManager.subscribeToTopic(topic, AWSIotMqttQos.QOS0,
+                                                new AWSIotMqttNewMessageCallback() {
+                                                    @Override
+                                                    public void onMessageArrived(final String topic, final byte[] data) {
+                                                        runOnUiThread(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                try {
+                                                                    String message = new String(data, "UTF-8");
+                                                                    CurrentStat.setText(message);
+                                                                    currentLockStatus = message;
+                                                                } catch (UnsupportedEncodingException e) {
+                                                                    Log.e(LOG_TAG, "Message encoding error.", e);
+                                                                }
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                    } catch (Exception e) {
+                                        Log.e(LOG_TAG, "Subscription error.", e);
+                                    }
                                 } else if (status == AWSIotMqttClientStatus.Reconnecting) {
                                     if (throwable != null) {
                                         Log.e(LOG_TAG, "Connection error.", throwable);
@@ -314,9 +344,13 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onClick(View v){
             final String topic = "LockStatus";
-            final String msg = "Locked";
-
+            final String msg;
             try {
+                if(currentLockStatus==null ||currentLockStatus.equals("Locked")){
+                    msg = "Unlocked";
+                }else{
+                    msg = "Locked";
+                }
                 mqttManager.publishString(msg, topic, AWSIotMqttQos.QOS0);
             } catch (Exception e) {
                 Log.e(LOG_TAG, "Publish error.", e);
