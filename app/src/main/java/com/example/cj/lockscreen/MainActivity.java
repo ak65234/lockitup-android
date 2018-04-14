@@ -310,7 +310,12 @@ public class MainActivity extends AppCompatActivity
                                                                     String message = new String(data, "UTF-8");
                                                                     CurrentStat.setText(message);
                                                                     currentLockStatus = message;
-
+                                                                    Log.e(LOG_TAG, message);
+                                                                    if(message.equals("Unlocked")){
+                                                                        But_Lock.setImageResource(R.drawable.unlocked);
+                                                                    }else{
+                                                                        But_Lock.setImageResource(R.drawable.locked);
+                                                                    }
                                                                 } catch (UnsupportedEncodingException e) {
                                                                     Log.e(LOG_TAG, "Message encoding error.", e);
                                                                 }
@@ -351,7 +356,11 @@ public class MainActivity extends AppCompatActivity
             final String topic = "LockStatus";
             final String msg;
             try {
-                if(currentLockStatus==null || currentLockStatus.equals("Locked")){
+                if(currentLockStatus==null){
+                    //do nothing
+                    msg = "Unlocked";
+                }
+                else if(currentLockStatus.equals("Locked")){
                     msg = "Unlocked";
                     But_Lock.setImageResource(R.drawable.unlocked);
 
