@@ -295,8 +295,12 @@ public class MainActivity extends AppCompatActivity
                                     But_Connection.setColorFilter(Color.parseColor("#e83535"));
                                 } else if (status == AWSIotMqttClientStatus.Connected) {
                                     But_Connection.setColorFilter(Color.parseColor("#099904"));
+
+
                                     //also try to subscribe now since we are connecting
                                     final String topic = "LockStatus";
+                                    //Since we dont have the data yet send the pi that we dont know it yet who will send it back
+                                    mqttManager.publishString("newSubscriber", topic, AWSIotMqttQos.QOS0);
                                     Log.d(LOG_TAG, "topic = " + topic);
                                     try {
                                         mqttManager.subscribeToTopic(topic, AWSIotMqttQos.QOS0,
@@ -357,7 +361,6 @@ public class MainActivity extends AppCompatActivity
             final String msg;
             try {
                 if(currentLockStatus==null){
-                    //do nothing
                     msg = "Unlocked";
                 }
                 else if(currentLockStatus.equals("Locked")){
