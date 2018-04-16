@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity
     // Certificate and key aliases in the KeyStore
     private static final String CERTIFICATE_ID = "FAKE";
     private String LWtopicName = "FAKE";
+
     AWSIotClient mIotAndroidClient;
     AWSIotMqttManager mqttManager;
     String clientId;
@@ -219,9 +220,6 @@ public class MainActivity extends AppCompatActivity
         //just get it connected when opening
         But_Connection.performClick();
         But_Connection.setClickable(false); //dont let it be able to press again
-
-
-
     }
 
     @Override
@@ -299,8 +297,6 @@ public class MainActivity extends AppCompatActivity
 
                                     //also try to subscribe now since we are connecting
                                     final String topic = "LockStatus";
-                                    //Since we dont have the data yet send the pi that we dont know it yet who will send it back
-                                    mqttManager.publishString("newSubscriber", topic, AWSIotMqttQos.QOS0);
                                     Log.d(LOG_TAG, "topic = " + topic);
                                     try {
                                         mqttManager.subscribeToTopic(topic, AWSIotMqttQos.QOS0,
@@ -317,7 +313,7 @@ public class MainActivity extends AppCompatActivity
                                                                     Log.e(LOG_TAG, message);
                                                                     if(message.equals("Unlocked")){
                                                                         But_Lock.setImageResource(R.drawable.unlocked);
-                                                                    }else{
+                                                                    }else if(message.equals("Locked")){
                                                                         But_Lock.setImageResource(R.drawable.locked);
                                                                     }
                                                                 } catch (UnsupportedEncodingException e) {
@@ -327,6 +323,8 @@ public class MainActivity extends AppCompatActivity
                                                         });
                                                     }
                                                 });
+                                        //Since we dont have the data yet send the pi that we dont know it yet who will send it back
+                                        mqttManager.publishString("newSubscriber", "LockStatus", AWSIotMqttQos.QOS0);
                                     } catch (Exception e) {
                                         Log.e(LOG_TAG, "Subscription error.", e);
                                     }
