@@ -5,4 +5,6 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_remove">Delete Lock</string>
+
+    <color name="new_color">#FFAAAAAA</color>
 </resources>

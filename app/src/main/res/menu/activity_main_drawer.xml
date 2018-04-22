@@ -5,19 +5,19 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_main"
+            android:id="@+id/nav_m"
             android:icon="@android:drawable/presence_online"
             android:title="Main Screen" />
         <item
-            android:id="@+id/nav_camera"
+            android:id="@+id/inventory"
             android:icon="@android:drawable/presence_online"
             android:title="Inventory" />
         <item
-            android:id="@+id/nav_gallery"
+            android:id="@+id/accessHistory"
             android:icon="@android:drawable/presence_online"
             android:title="Access History" />
         <item
-            android:id="@+id/nav_slideshow"
+            android:id="@+id/nav_permission"
             android:icon="@android:drawable/presence_online"
             android:title="Permissions" />
         <item

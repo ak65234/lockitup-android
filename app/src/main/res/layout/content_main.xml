@@ -49,4 +49,10 @@
             android:src="@drawable/connected"
             android:id="@+id/But_Connection"/>
     </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/content_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 </android.support.constraint.ConstraintLayout>
