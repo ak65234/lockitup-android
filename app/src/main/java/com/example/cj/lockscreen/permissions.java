@@ -6,6 +6,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+
 
 public class permissions extends Fragment{
     @Nullable
@@ -23,4 +25,6 @@ public class permissions extends Fragment{
         //you can set the title for your toolbar here for different fragments different titles
         getActivity().setTitle("Permissions");
     }
+
+
 }
