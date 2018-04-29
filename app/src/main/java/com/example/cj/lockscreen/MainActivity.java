@@ -50,22 +50,22 @@ public class MainActivity extends AppCompatActivity
 
     // IoT endpoint
     // AWS Iot CLI describe-endpoint call returns: XXXXXXXXXX.iot.<region>.amazonaws.com
-    private static final String CUSTOMER_SPECIFIC_ENDPOINT = "FAKE";
+    private static final String CUSTOMER_SPECIFIC_ENDPOINT = Constants.CUSTOMER_SPECIFIC_ENDPOINT;
     // Cognito pool ID. For this app, pool needs to be unauthenticated pool with
     // AWS IoT permissions.
-    private static final String COGNITO_POOL_ID = "FAKE";
+    private static final String COGNITO_POOL_ID = Constants.COGNITO_POOL_ID;
     // Name of the AWS IoT policy to attach to a newly created certificate
-    private static final String AWS_IOT_POLICY_NAME = "FAKE";
+    private static final String AWS_IOT_POLICY_NAME = Constants.AWS_IOT_POLICY_NAME;
 
     // Region of AWS IoT
     private static final Regions MY_REGION = Regions.US_EAST_2;
     // Filename of KeyStore file on the filesystem
-    private static final String KEYSTORE_NAME = "FAKE";
+    private static final String KEYSTORE_NAME = Constants.KEYSTORE_NAME;
     // Password for the private key in the KeyStore
-    private static final String KEYSTORE_PASSWORD = "FAKE";
+    private static final String KEYSTORE_PASSWORD = Constants.KEYSTORE_PASSWORD;
     // Certificate and key aliases in the KeyStore
-    private static final String CERTIFICATE_ID = "FAKE";
-    private String LWtopicName = "FAKE";
+    private static final String CERTIFICATE_ID = Constants.CERTIFICATE_ID;
+    private String LWtopicName = Constants.LWtopicName;
 
     AWSIotClient mIotAndroidClient;
     AWSIotMqttManager mqttManager;
