@@ -7,4 +7,5 @@
     <string name="action_remove">Delete Lock</string>
 
     <color name="new_color">#FFAAAAAA</color>
+    <string name="title_activity_test">TestActivity</string>
 </resources>

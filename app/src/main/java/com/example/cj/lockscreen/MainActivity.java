@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity
 
     // IoT endpoint
     // AWS Iot CLI describe-endpoint call returns: XXXXXXXXXX.iot.<region>.amazonaws.com
-    private static final String CUSTOMER_SPECIFIC_ENDPOINT = Constants.CUSTOMER_SPECIFIC_ENDPOINT;
+/*    private static final String CUSTOMER_SPECIFIC_ENDPOINT = Constants.CUSTOMER_SPECIFIC_ENDPOINT;
     // Cognito pool ID. For this app, pool needs to be unauthenticated pool with
     // AWS IoT permissions.
     private static final String COGNITO_POOL_ID = Constants.COGNITO_POOL_ID;
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity
     private static final String KEYSTORE_PASSWORD = Constants.KEYSTORE_PASSWORD;
     // Certificate and key aliases in the KeyStore
     private static final String CERTIFICATE_ID = Constants.CERTIFICATE_ID;
-    private String LWtopicName = Constants.LWtopicName;
+    private String LWtopicName = Constants.LWtopicName; */
 
     AWSIotClient mIotAndroidClient;
     AWSIotMqttManager mqttManager;
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity
 
 
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        /*DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity
         }
         //just get it connected when opening
         But_Connection.performClick();
-        But_Connection.setClickable(false); //dont let it be able to press again
+        But_Connection.setClickable(false); //dont let it be able to press again */
     }
 
     @Override
