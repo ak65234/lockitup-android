@@ -10,6 +10,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +25,7 @@ public class PermissionTable extends android.support.v4.app.Fragment {
     UserAdapter adapter;
     //when we query only select the user and id
     List<Users> usersList;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -55,5 +61,8 @@ public class PermissionTable extends android.support.v4.app.Fragment {
         usersList.add(newUser3);
         adapter = new UserAdapter(getActivity(),usersList);
         recyclerView.setAdapter(adapter);
+
+
     }
+
 }
