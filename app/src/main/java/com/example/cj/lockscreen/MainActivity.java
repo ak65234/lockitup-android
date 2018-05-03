@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity
     // AWS Iot CLI describe-endpoint call returns: XXXXXXXXXX.iot.<region>.amazonaws.com
 /*    private static final String CUSTOMER_SPECIFIC_ENDPOINT = Constants.CUSTOMER_SPECIFIC_ENDPOINT;
     // Cognito pool ID. For this app, pool needs to be unauthenticated pool with
-    // AWS IoT permissions.
+    // AWS IoT permisions.
     private static final String COGNITO_POOL_ID = Constants.COGNITO_POOL_ID;
     // Name of the AWS IoT policy to attach to a newly created certificate
     private static final String AWS_IOT_POLICY_NAME = Constants.AWS_IOT_POLICY_NAME;
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity
 
 
 
-        /*DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
+        /*
         //ELEMENTS INITS
         //Button But_Lock = (Button) findViewById(R.id.But)
         But_Connection = (ImageButton) findViewById(R.id.But_Connection);
@@ -266,7 +266,7 @@ public class MainActivity extends AppCompatActivity
                 fragment = new accessHistory();
                 break;
             case R.id.nav_permission:
-                fragment = new permissions();
+                fragment = new PermissionTable();
                 break;
         }
         if (fragment != null) {

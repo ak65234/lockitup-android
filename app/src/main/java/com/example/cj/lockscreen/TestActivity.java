@@ -63,9 +63,10 @@ public class TestActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 final Users newUser = new Users();
-                newUser.setUserId(new Integer(usrName.getText().toString()));
-                newUser.setOwner(true);
-                newUser.setPassword(usrPass.getText().toString());
+                //TODO change this method to reflect new values
+               // newUser.setUserId(new Integer(usrName.getText().toString()));
+               // newUser.setOwner(true);
+              //  newUser.setPassword(usrPass.getText().toString());
 
                 new Thread(new Runnable() {
                     @Override
