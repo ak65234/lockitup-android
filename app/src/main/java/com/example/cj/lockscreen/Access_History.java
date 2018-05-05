@@ -9,19 +9,10 @@ public class Access_History {
 
     @DynamoDBTable(tableName = "ACCESS_HISTORY")
     public class Users {
-        private Integer _aid;
         private String _username;
         private String _time;
         private String _action;
         //Hash key means it is the primary key
-        @DynamoDBHashKey(attributeName = "AID")
-        @DynamoDBAttribute(attributeName = "AID")
-        public  Integer get_aid(){
-            return _aid;
-        }
-        public void set_aid(Integer i){
-            _aid = i;
-        }
         //Is the column name
         @DynamoDBRangeKey(attributeName = "USERNAME")
         @DynamoDBAttribute(attributeName = "USERNAME")
@@ -32,6 +23,8 @@ public class Access_History {
             this._username = id;
 
         }
+        
+        @DynamoDBHashKey(attributeName = "TIME")
         @DynamoDBAttribute(attributeName = "TIME")
         public String get_time(){
             return _time;
