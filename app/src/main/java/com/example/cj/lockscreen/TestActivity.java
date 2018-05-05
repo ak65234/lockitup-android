@@ -34,7 +34,7 @@ public class TestActivity extends AppCompatActivity {
     AWSIotClient mIotAndroidClient;
     AWSIotMqttManager mqttManager;
     String clientId;
-    private static final String AWS_IOT_POLICY_NAME = "Lock_Andorid";
+    private static final String AWS_IOT_POLICY_NAME = "XXX_PRIVATE_XXX";
     private static final String LOG_TAG = "TestActivity";
 
 
@@ -55,7 +55,7 @@ public class TestActivity extends AppCompatActivity {
 
         //mIotAndroidClient = new AWSIotClient(AWSProvider.getInstance().getIdentityManager().getCredentialsProvider());
 
-        AWSProvider.init(getApplicationContext());
+        //AWSProvider.init(getApplicationContext());
 
         dbMapper = AWSProvider.getInstance().getDyanomoDBMapper();
 
@@ -88,7 +88,7 @@ public class TestActivity extends AppCompatActivity {
         clientId = UUID.randomUUID().toString();
 
         // MQTT Client
-        mqttManager = new AWSIotMqttManager(clientId, "a3hkoemx2m8jkr.iot.us-east-2.amazonaws.com");
+        mqttManager = new AWSIotMqttManager(clientId, "XXX_PRIVATE_XXX");
         //MQTT pings every 10 seconds
         mqttManager.setKeepAlive(10);
         // Set Last Will and Testament for MQTT.  On an unclean disconnect (loss of connection)
