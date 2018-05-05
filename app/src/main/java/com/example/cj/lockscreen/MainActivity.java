@@ -37,6 +37,9 @@ import com.amazonaws.services.iot.AWSIotClient;
 import com.amazonaws.services.iot.model.AttachPrincipalPolicyRequest;
 import com.amazonaws.services.iot.model.CreateKeysAndCertificateRequest;
 import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
+
+import org.json.JSONException;
+
 import java.io.UnsupportedEncodingException;
 import java.security.KeyStore;
 import java.util.UUID;
@@ -46,35 +49,11 @@ public class MainActivity extends AppCompatActivity
 
     static final String LOG_TAG = "Main";
 
-    // --- Constants to modify per your configuration ---
 
-    // IoT endpoint
-    // AWS Iot CLI describe-endpoint call returns: XXXXXXXXXX.iot.<region>.amazonaws.com
-/*    private static final String CUSTOMER_SPECIFIC_ENDPOINT = Constants.CUSTOMER_SPECIFIC_ENDPOINT;
-    // Cognito pool ID. For this app, pool needs to be unauthenticated pool with
-    // AWS IoT permisions.
-    private static final String COGNITO_POOL_ID = Constants.COGNITO_POOL_ID;
-    // Name of the AWS IoT policy to attach to a newly created certificate
-    private static final String AWS_IOT_POLICY_NAME = Constants.AWS_IOT_POLICY_NAME;
-
-    // Region of AWS IoT
-    private static final Regions MY_REGION = Regions.US_EAST_2;
-    // Filename of KeyStore file on the filesystem
-    private static final String KEYSTORE_NAME = Constants.KEYSTORE_NAME;
-    // Password for the private key in the KeyStore
-    private static final String KEYSTORE_PASSWORD = Constants.KEYSTORE_PASSWORD;
-    // Certificate and key aliases in the KeyStore
-    private static final String CERTIFICATE_ID = Constants.CERTIFICATE_ID;
-    private String LWtopicName = Constants.LWtopicName; */
-
-    AWSIotClient mIotAndroidClient;
+    //AWSIotClient mIotAndroidClient;
     AWSIotMqttManager mqttManager;
-    String clientId;
-    String keystorePath;
-    String keystoreName;
-    String keystorePassword;
-    KeyStore clientKeyStore = null;
-    String certificateId;
+
+    KeyStore clientKeyStore;
     private String currentLockStatus;
     CognitoCachingCredentialsProvider credentialsProvider;
 
@@ -90,9 +69,6 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
 
-
-
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -101,7 +77,16 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        /*
+
+        AWSProvider.init(getApplicationContext());
+        try {
+            mqttManager = AWSProvider.getInstance().getMqttManager();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        clientKeyStore = AWSProvider.getInstance().getClientKeyStore();
+
+
         //ELEMENTS INITS
         //Button But_Lock = (Button) findViewById(R.id.But)
         But_Connection = (ImageButton) findViewById(R.id.But_Connection);
@@ -110,112 +95,8 @@ public class MainActivity extends AppCompatActivity
         But_Lock.setOnClickListener(pushToLock);
         CurrentStat = (TextView) findViewById(R.id.Text_Status);
 
-        //AWS INITS
-        //create random client ID (each account needs to be unique)
-        clientId = UUID.randomUUID().toString();
-        // Initialize the AWS Cognito credentials provider
-        credentialsProvider = new CognitoCachingCredentialsProvider(getApplicationContext(),COGNITO_POOL_ID, MY_REGION);
-        Region region = Region.getRegion(MY_REGION);
-        // MQTT Client
-        mqttManager = new AWSIotMqttManager(clientId, CUSTOMER_SPECIFIC_ENDPOINT);
-        //MQTT pings every 10 seconds
-        mqttManager.setKeepAlive(10);
         //TODO change this to notify other devices
-        // Set Last Will and Testament for MQTT.  On an unclean disconnect (loss of connection)
-        // AWS IoT will publish this message to alert other clients.
-        AWSIotMqttLastWillAndTestament lwt = new AWSIotMqttLastWillAndTestament(LWtopicName,
-                "Android client lost connection", AWSIotMqttQos.QOS0);
-        mqttManager.setMqttLastWillAndTestament(lwt);
 
-        // IoT Client (for creation of certificate if needed)
-        mIotAndroidClient = new AWSIotClient(credentialsProvider);
-        mIotAndroidClient.setRegion(region);
-
-        keystorePath = getFilesDir().getPath();
-        keystoreName = KEYSTORE_NAME;
-        keystorePassword = KEYSTORE_PASSWORD;
-        certificateId = CERTIFICATE_ID;
-
-
-        // To load cert/key from keystore on filesystem
-        try {
-            if (AWSIotKeystoreHelper.isKeystorePresent(keystorePath, keystoreName)) {
-                if (AWSIotKeystoreHelper.keystoreContainsAlias(certificateId, keystorePath, keystoreName, keystorePassword)) {
-                    Log.i(LOG_TAG, "Certificate " + certificateId
-                            + " found in keystore - using for MQTT.");
-                    // load keystore from file into memory to pass on connection
-                    clientKeyStore = AWSIotKeystoreHelper.getIotKeystore(certificateId,
-                            keystorePath, keystoreName, keystorePassword);
-                    //.setEnabled(true);
-                } else {
-                    Log.i(LOG_TAG, "Key/cert " + certificateId + " not found in keystore.");
-                }
-            } else {
-                Log.i(LOG_TAG, "Keystore " + keystorePath + "/" + keystoreName + " not found.");
-            }
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "An error occurred retrieving cert/key from keystore.", e);
-        }
-        if (clientKeyStore == null) {
-            Log.i(LOG_TAG, "Cert/key was not found in keystore - creating new key and certificate.");
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        // Create a new private key and certificate. This call
-                        // creates both on the server and returns them to the device.
-                        CreateKeysAndCertificateRequest createKeysAndCertificateRequest =
-                                new CreateKeysAndCertificateRequest();
-                        createKeysAndCertificateRequest.setSetAsActive(true);
-                        final CreateKeysAndCertificateResult createKeysAndCertificateResult;
-                        createKeysAndCertificateResult =
-                                mIotAndroidClient.createKeysAndCertificate(createKeysAndCertificateRequest);
-                        Log.i(LOG_TAG,
-                                "Cert ID: " +
-                                        createKeysAndCertificateResult.getCertificateId() +
-                                        " created.");
-
-                        // store in keystore for use in MQTT client
-                        // saved as alias "default" so a new certificate isn't
-                        // generated each run of this application
-                        AWSIotKeystoreHelper.saveCertificateAndPrivateKey(certificateId,
-                                createKeysAndCertificateResult.getCertificatePem(),
-                                createKeysAndCertificateResult.getKeyPair().getPrivateKey(),
-                                keystorePath, keystoreName, keystorePassword);
-
-                        // load keystore from file into memory to pass on
-                        // connection
-                        clientKeyStore = AWSIotKeystoreHelper.getIotKeystore(certificateId,
-                                keystorePath, keystoreName, keystorePassword);
-
-                        // Attach a policy to the newly created certificate.
-                        // This flow assumes the policy was already created in
-                        // AWS IoT and we are now just attaching it to the
-                        // certificate.
-                        AttachPrincipalPolicyRequest policyAttachRequest =
-                                new AttachPrincipalPolicyRequest();
-                        policyAttachRequest.setPolicyName(AWS_IOT_POLICY_NAME);
-                        policyAttachRequest.setPrincipal(createKeysAndCertificateResult
-                                .getCertificateArn());
-                        mIotAndroidClient.attachPrincipalPolicy(policyAttachRequest);
-
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                //btnConnect.setEnabled(true);
-                            }
-                        });
-                    } catch (Exception e) {
-                        Log.e(LOG_TAG,
-                                "Exception occurred when generating new private key and certificate.",
-                                e);
-                    }
-                }
-            }).start();
-        }
-        //just get it connected when opening
-        But_Connection.performClick();
-        But_Connection.setClickable(false); //dont let it be able to press again */
     }
 
     @Override
@@ -296,6 +177,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onClick(View v) {
             try {
+                clientKeyStore = AWSProvider.getInstance().getClientKeyStore();
                 mqttManager.connect(clientKeyStore, new AWSIotMqttClientStatusCallback() {
                     @Override
                     public void onStatusChanged(final AWSIotMqttClientStatus status, final Throwable throwable) {
