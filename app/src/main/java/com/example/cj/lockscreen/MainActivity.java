@@ -255,6 +255,7 @@ public class MainActivity extends AppCompatActivity
             final String msg;
             try {
                 //TODO Check if their status is correct on the table
+                //TODO Put in access history all
                 if(currentLockStatus==null){
                     msg = "Unlocked";
                 }

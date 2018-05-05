@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Condition;
 
 public class PermissionTable extends android.support.v4.app.Fragment {
 
@@ -37,7 +38,15 @@ public class PermissionTable extends android.support.v4.app.Fragment {
         RecyclerView.LayoutManager layouter = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layouter);
 
-        //Grab the items from the database here
+        //TODO Grab the items from the database here
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Users user = new Users();
+                com.amazonaws.services.dynamodbv2.model.Condition rangeKeyCondition = new com.amazonaws.services.dynamodbv2.model.Condition()
+                        .
+            }
+        });
         Users newUser = new Users();
         newUser.set_permID(0);
         newUser.set_username("Jarrod");
