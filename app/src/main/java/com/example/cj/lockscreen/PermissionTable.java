@@ -1,20 +1,12 @@
 package com.example.cj.lockscreen;
 
-import android.app.Fragment;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.Spinner;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +30,7 @@ public class PermissionTable extends android.support.v4.app.Fragment {
         super.onActivityCreated(savedInstanceState);
         //This is the equivaelent to the oncreate methods
         usersList = new ArrayList<>();
-        recyclerView = (RecyclerView) getView().findViewById(R.id.recycler_View);
+        recyclerView = (RecyclerView) getView().findViewById(R.id.permission_recycler_View);
         //Sets the recycler view to a fixed size
         recyclerView.setHasFixedSize(true);
         //sets it to a vertical layout, card with stack on top each other

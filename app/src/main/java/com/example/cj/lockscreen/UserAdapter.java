@@ -1,18 +1,13 @@
 package com.example.cj.lockscreen;
 
 import android.content.Context;
-import android.support.v7.view.menu.MenuView;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -64,8 +59,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         return userList.size();
     }
 
-
-
     class UserViewHolder extends RecyclerView.ViewHolder{
 
         TextView userName;
@@ -77,7 +70,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
             userName = itemView.findViewById(R.id.userName);
             permID = itemView.findViewById(R.id.text_PermissionLevel);
-            parentLayout = itemView.findViewById(R.id.parent_Layout_list);
+            parentLayout = itemView.findViewById(R.id.perm_parent_Layout_list);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

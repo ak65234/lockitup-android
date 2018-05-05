@@ -263,7 +263,7 @@ public class MainActivity extends AppCompatActivity
                 fragment = new inventory();
                 break;
             case R.id.accessHistory:
-                fragment = new accessHistory();
+                fragment = new frag_access_history();
                 break;
             case R.id.nav_permission:
                 fragment = new PermissionTable();
