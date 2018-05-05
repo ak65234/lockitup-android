@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity
                 fragment = new inventory();
                 break;
             case R.id.accessHistory:
-                fragment = new accessHistory();
+                fragment = new frag_access_history();
                 break;
             case R.id.nav_permission:
                 fragment = new PermissionTable();
@@ -254,6 +254,7 @@ public class MainActivity extends AppCompatActivity
             final String topic = "LockStatus";
             final String msg;
             try {
+                //TODO Check if their status is correct on the table
                 if(currentLockStatus==null){
                     msg = "Unlocked";
                 }
