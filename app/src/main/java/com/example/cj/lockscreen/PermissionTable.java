@@ -53,8 +53,6 @@ public class PermissionTable extends android.support.v4.app.Fragment {
         usersList.add(newUser3);
         adapter = new UserAdapter(getActivity(),usersList);
         recyclerView.setAdapter(adapter);
-
-
     }
 
 }

@@ -372,6 +372,7 @@ public class MainActivity extends AppCompatActivity
             final String topic = "LockStatus";
             final String msg;
             try {
+                //TODO Check if their status is correct on the table
                 if(currentLockStatus==null){
                     msg = "Unlocked";
                 }

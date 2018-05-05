@@ -42,9 +42,9 @@ public class access_history_Adapter extends RecyclerView.Adapter<access_history_
         //Set any variables to the data
         //TODO link this to the class methods
 
-       // holder.userName.setText(access.getusername());
-       // holder.access_action.setText(access.getaction());
-       // holder.dateTime.setText(access.gettime());
+        holder.userName.setText(access.get_username());
+        holder.access_action.setText(access.get_action());
+        holder.dateTime.setText(access.get_time());
     }
 
     //Returns the size of the list
