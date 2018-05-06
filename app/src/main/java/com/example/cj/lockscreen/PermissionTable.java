@@ -47,6 +47,8 @@ public class PermissionTable extends android.support.v4.app.Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        getActivity().setTitle("Permissions");
+
         dbMapper = AWSProvider.getInstance().getDyanomoDBMapper();
         //This is the equivaelent to the oncreate methods
         recyclerView = (RecyclerView) getView().findViewById(R.id.permission_recycler_View);

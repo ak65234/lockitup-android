@@ -44,7 +44,7 @@ public class frag_access_history extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+        getActivity().setTitle("Access History");
         dbMapper = AWSProvider.getInstance().getDyanomoDBMapper();
         //This is the equivaelent to the oncreate methods
         recyclerView = (RecyclerView) getView().findViewById(R.id.access_recycler_View);

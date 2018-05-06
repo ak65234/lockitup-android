@@ -72,6 +72,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         TextView userName;
         TextView permID;
         LinearLayout parentLayout;
+        TextView emptyText;
         //Constructor
         public UserViewHolder(final View itemView) {
             super(itemView);
@@ -79,7 +80,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             userName = itemView.findViewById(R.id.userName);
             permID = itemView.findViewById(R.id.text_PermissionLevel);
             parentLayout = itemView.findViewById(R.id.perm_parent_Layout_list);
-
+            emptyText = itemView.findViewById(R.id.permission_empty);
+            if(getItemCount()==0){
+                emptyText.setVisibility(View.VISIBLE);
+            }
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View view) {
