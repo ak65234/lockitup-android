@@ -23,8 +23,12 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.widget.Toast;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.mobile.auth.core.internal.util.ThreadUtils;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBQueryExpression;
 import com.amazonaws.mobileconnectors.iot.AWSIotKeystoreHelper;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttClientStatusCallback;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttLastWillAndTestament;
@@ -42,12 +46,19 @@ import org.json.JSONException;
 
 import java.io.UnsupportedEncodingException;
 import java.security.KeyStore;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+
+import static com.amazonaws.mobile.auth.core.internal.util.ThreadUtils.runOnUiThread;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     static final String LOG_TAG = "Main";
+    final static String USR_PREFERENCE = "user_name";
+    final static String PERM_PREFERENCE = "user_prem";
 
 
     //AWSIotClient mIotAndroidClient;
@@ -61,14 +72,14 @@ public class MainActivity extends AppCompatActivity
     ImageButton But_Connection;
     ImageButton But_Lock;
     TextView CurrentStat;
+    DynamoDBMapper dbMapper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -78,7 +89,6 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        AWSProvider.init(getApplicationContext());
         try {
             mqttManager = AWSProvider.getInstance().getMqttManager();
         } catch (JSONException e) {
@@ -94,9 +104,7 @@ public class MainActivity extends AppCompatActivity
         But_Lock = (ImageButton) findViewById(R.id.But_ChangeLockStatus);
         But_Lock.setOnClickListener(pushToLock);
         CurrentStat = (TextView) findViewById(R.id.Text_Status);
-
-        //TODO change this to notify other devices
-
+        But_Connection.callOnClick();
     }
 
     @Override
@@ -112,6 +120,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
+
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
@@ -134,28 +143,30 @@ public class MainActivity extends AppCompatActivity
     public void displaySelectedScreen(int itemId){
 
         Fragment fragment = null;
-
-        switch (itemId){
-            case R.id.nav_m:
-                fragment = null;
-                startActivity(new Intent(getApplicationContext(),MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                break;
-            case R.id.inventory:
-                fragment = new inventory();
-                break;
-            case R.id.accessHistory:
-                fragment = new frag_access_history();
-                break;
-            case R.id.nav_permission:
-                fragment = new PermissionTable();
-                break;
+        if(User.getInstance().getPermID()!=0){
+            Toast.makeText(this.getApplicationContext(),"Invalid Permissions",Toast.LENGTH_LONG).show();
+        }else{
+            switch (itemId){
+                case R.id.nav_m:
+                    fragment = null;
+                    startActivity(new Intent(getApplicationContext(),MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                    break;
+                case R.id.inventory:
+                    fragment = new inventory();
+                    break;
+                case R.id.accessHistory:
+                    fragment = new frag_access_history();
+                    break;
+                case R.id.nav_permission:
+                    fragment = new PermissionTable();
+                    break;
+            }
+            if (fragment != null) {
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.content_frame, fragment);
+                ft.commit();
+            }
         }
-        if (fragment != null) {
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.content_frame, fragment);
-            ft.commit();
-        }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
     }
@@ -251,22 +262,79 @@ public class MainActivity extends AppCompatActivity
     View.OnClickListener pushToLock = new View.OnClickListener(){
         @Override
         public void onClick(View v){
+
             final String topic = "LockStatus";
-            final String msg;
+            dbMapper = AWSProvider.getInstance().getDyanomoDBMapper();
             try {
                 //TODO Check if their status is correct on the table
-                if(currentLockStatus==null){
-                    msg = "Unlocked";
-                }
-                else if(currentLockStatus.equals("Locked")){
-                    msg = "Unlocked";
-                    But_Lock.setImageResource(R.drawable.unlocked);
+                //TODO Put in access history all
 
-                }else{
-                    msg = "Locked";
-                    But_Lock.setImageResource(R.drawable.locked);
-                }
-                mqttManager.publishString(msg, topic, AWSIotMqttQos.QOS0);
+                //QUERY for this user to see what permission levels they are on
+                //thisUser.set_username(); set to current
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final Access_History newAction = new Access_History();
+
+                        final Users thisUser = new Users();
+                        thisUser.set_username(User.getInstance().getUsername());
+                        thisUser.set_permID(User.getInstance().getPermID());
+                        DynamoDBQueryExpression<Users> queryExpression= new DynamoDBQueryExpression<Users>()
+                                .withHashKeyValues(thisUser);
+                        final List<Users> result = dbMapper.query(Users.class, queryExpression);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String msg; //What to tell topic
+                                System.out.println(result.get(0).get_username()+"   \n\n\n"+result.get(0).get_permID());
+                                if(result.get(0).get_permID() < 2){
+                                    if(currentLockStatus==null){
+                                        msg = "Unlocked";
+                                    }
+                                    else if(currentLockStatus.equals("Locked")){
+                                        msg = "Unlocked";
+                                        But_Lock.setImageResource(R.drawable.unlocked);
+
+                                    }else{
+                                        msg = "Locked";
+                                        But_Lock.setImageResource(R.drawable.locked);
+                                    }
+                                    mqttManager.publishString(msg, topic, AWSIotMqttQos.QOS0);
+
+                                }else{
+                                    Toast.makeText(getApplicationContext(),"Invalid Permissions",Toast.LENGTH_LONG).show();
+                                    msg = "Unauthorized Attempt";
+                                }
+                            }
+                        });
+                        //send the action off
+                        System.out.println("We are sending now");
+                        //Tell the DB Access History that someone did something
+                        String messager;
+                        newAction.set_username(thisUser.get_username());
+                        //Have to repeat above since on different thread
+                        if(result.get(0).get_permID() < 2){
+                            if(currentLockStatus==null){
+                                messager = "Unlocked";
+                            }
+                            else if(currentLockStatus.equals("Locked")){
+                                messager = "Unlocked";
+
+                            }else{
+                                messager = "Locked";
+                            }
+                        }else{
+                            messager = "Unauthorized";
+                        }
+                        newAction.set_action(messager);
+                        SimpleDateFormat formatted = new SimpleDateFormat("MM/dd HH:mm a");
+                        Date now = new Date();
+                        String currentTime = formatted.format(now);
+                        System.out.println("Current time is " + currentTime);
+                        newAction.set_time(currentTime);
+                        dbMapper.save(newAction);
+                    }
+                }).start();
             } catch (Exception e) {
                 Log.e(LOG_TAG, "Publish error.", e);
             }

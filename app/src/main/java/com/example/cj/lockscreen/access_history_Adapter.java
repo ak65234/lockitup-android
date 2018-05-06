@@ -50,7 +50,11 @@ public class access_history_Adapter extends RecyclerView.Adapter<access_history_
     //Returns the size of the list
     @Override
     public int getItemCount() {
-        return accessList.size();
+        try {
+            return accessList.size();
+        }catch (Exception e){
+            return 0;
+        }
     }
 
     class access_historyViewHolder extends RecyclerView.ViewHolder{
@@ -59,9 +63,15 @@ public class access_history_Adapter extends RecyclerView.Adapter<access_history_
         TextView dateTime;
         TextView access_action;
         LinearLayout parentLayout;
+        TextView emptyHistory;
+
         //Constructor
         public access_historyViewHolder(final View itemView) {
             super(itemView);
+            emptyHistory = itemView.findViewById(R.id.access_empty);
+            if(getItemCount()==0){
+                emptyHistory.setVisibility(View.VISIBLE);
+            }
             userName = itemView.findViewById(R.id.access_user);
             dateTime = itemView.findViewById(R.id.access_time);
             access_action = itemView.findViewById(R.id.access_action);
