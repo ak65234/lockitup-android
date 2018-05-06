@@ -17,6 +17,7 @@ public class Users {
     private String _username;
     private Integer _permID;
     private String _password;
+
     //Hash key means it is the primary key
     @DynamoDBHashKey(attributeName = "USERNAME")
     //Is the column name

@@ -18,6 +18,8 @@ import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 public class SignUp extends AppCompatActivity {
     final static String LOG_TAG = "Sign-up Page";
     final static String USR_PREFERENCE = "user_name";
+    final static String PERM_PREFERENCE = "user_prem";
+    final static Integer DEFAULT_PERMISSION = 3;
     final static String CODE = "XXXXX";
     EditText nameView, emailView, passwordView, lockCodeView;
     CheckBox ownerCheckBoxView;
@@ -53,9 +55,11 @@ public class SignUp extends AppCompatActivity {
 
         userAttributes = getSharedPreferences(getString(R.string.usr), Context.MODE_PRIVATE);
         name = userAttributes.getString(USR_PREFERENCE, null);
+        perm = userAttributes.getInt(PERM_PREFERENCE, DEFAULT_PERMISSION);
         if (name != null){
             Intent intent = new Intent(context, MainActivity.class);
             intent.putExtra(USR_PREFERENCE, name);
+            intent.putExtra(PERM_PREFERENCE, perm);
             startActivity(intent);
             finish();
         }
@@ -125,9 +129,11 @@ public class SignUp extends AppCompatActivity {
         protected void onPostExecute(Integer integer) {
             SharedPreferences.Editor editor = userAttributes.edit();
             editor.putString(USR_PREFERENCE, name);
+            editor.putInt(PERM_PREFERENCE, perm);
             editor.commit();
             Intent intent = new Intent(context, MainActivity.class);
             intent.putExtra(USR_PREFERENCE, name);
+            intent.putExtra(PERM_PREFERENCE, perm);
             dialog.cancel();
             startActivity(intent);
             finish();

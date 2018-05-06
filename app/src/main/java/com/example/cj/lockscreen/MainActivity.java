@@ -48,6 +48,8 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     static final String LOG_TAG = "Main";
+    final static String USR_PREFERENCE = "user_name";
+    final static String PERM_PREFERENCE = "user_prem";
 
 
     //AWSIotClient mIotAndroidClient;
@@ -67,6 +69,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -97,6 +101,12 @@ public class MainActivity extends AppCompatActivity
 
         //TODO change this to notify other devices
 
+        //setting up user singleton class
+        Bundle extras = getIntent().getExtras();
+        Integer permId = extras.getInt(PERM_PREFERENCE);
+        String username = extras.getString(USR_PREFERENCE);
+        User.init(username, permId);
+        Log.d("TEST_TEST", User.getInstance().getUsername() + " " + User.getInstance().getPermID().toString());
     }
 
     @Override
