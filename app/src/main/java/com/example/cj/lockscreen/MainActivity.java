@@ -89,7 +89,6 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        AWSProvider.init(getApplicationContext());
         try {
             mqttManager = AWSProvider.getInstance().getMqttManager();
         } catch (JSONException e) {
@@ -107,13 +106,8 @@ public class MainActivity extends AppCompatActivity
         CurrentStat = (TextView) findViewById(R.id.Text_Status);
 
         //setting up user singleton class
-        Bundle extras = getIntent().getExtras();
-        Integer permId = extras.getInt(PERM_PREFERENCE);
-        String username = extras.getString(USR_PREFERENCE);
-        User.init(username, permId);
-        Log.d("TEST_TEST", User.getInstance().getUsername() + " " + User.getInstance().getPermID().toString());
-        //Start connecting automatically
-        But_Connection.callOnClick();
+         Log.d("TEST_TEST", User.getInstance().getUsername() + " " + User.getInstance().getPermID().toString());
+
     }
 
     @Override
@@ -339,7 +333,7 @@ public class MainActivity extends AppCompatActivity
                         SimpleDateFormat formatted = new SimpleDateFormat("MM/dd HH:mm a");
                         Date now = new Date();
                         String currentTime = formatted.format(now);
-                        System.out.println("Current time is "+currentTime);
+                        System.out.println("Current time is " + currentTime);
                         newAction.set_time(currentTime);
                         dbMapper.save(newAction);
                     }
