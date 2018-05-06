@@ -107,6 +107,7 @@ public class MainActivity extends AppCompatActivity
 
         //setting up user singleton class
          Log.d("TEST_TEST", User.getInstance().getUsername() + " " + User.getInstance().getPermID().toString());
+         But_Connection.callOnClick();
 
     }
 
