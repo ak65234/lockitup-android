@@ -48,18 +48,20 @@ public class SignUp extends AppCompatActivity {
         signUpView = (Button) findViewById(R.id.btn_signup);
         dialog = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
 
-
         AWSProvider.init(context);
-
 
 
         userAttributes = getSharedPreferences(getString(R.string.usr), Context.MODE_PRIVATE);
         name = userAttributes.getString(USR_PREFERENCE, null);
         perm = userAttributes.getInt(PERM_PREFERENCE, DEFAULT_PERMISSION);
         if (name != null){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    User.init(name, perm);
+                }
+            }).run();
             Intent intent = new Intent(context, MainActivity.class);
-            intent.putExtra(USR_PREFERENCE, name);
-            intent.putExtra(PERM_PREFERENCE, perm);
             startActivity(intent);
             finish();
         }
