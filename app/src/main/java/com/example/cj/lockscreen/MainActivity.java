@@ -79,6 +79,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        //start it connecting automatically
 
 
 
@@ -109,14 +110,14 @@ public class MainActivity extends AppCompatActivity
         But_Lock.setOnClickListener(pushToLock);
         CurrentStat = (TextView) findViewById(R.id.Text_Status);
 
-        //TODO change this to notify other devices
-
         //setting up user singleton class
         Bundle extras = getIntent().getExtras();
         Integer permId = extras.getInt(PERM_PREFERENCE);
         String username = extras.getString(USR_PREFERENCE);
         User.init(username, permId);
         Log.d("TEST_TEST", User.getInstance().getUsername() + " " + User.getInstance().getPermID().toString());
+        //Start connecting automatically
+        But_Connection.callOnClick();
     }
 
     @Override
@@ -332,10 +333,10 @@ public class MainActivity extends AppCompatActivity
                                 messager = "Locked";
                             }
                         }else{
-                            messager = "Unauthorized Attempt";
+                            messager = "Unauthorized";
                         }
                         newAction.set_action(messager);
-                        SimpleDateFormat formatted = new SimpleDateFormat("HH:mm yyyy-MM-dd");
+                        SimpleDateFormat formatted = new SimpleDateFormat("MM/dd HH:mm a");
                         Date now = new Date();
                         String currentTime = formatted.format(now);
                         System.out.println("Current time is "+currentTime);
