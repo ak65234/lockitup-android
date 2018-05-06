@@ -50,7 +50,11 @@ public class access_history_Adapter extends RecyclerView.Adapter<access_history_
     //Returns the size of the list
     @Override
     public int getItemCount() {
-        return accessList.size();
+        try {
+            return accessList.size();
+        }catch (Exception e){
+            return 0;
+        }
     }
 
     class access_historyViewHolder extends RecyclerView.ViewHolder{

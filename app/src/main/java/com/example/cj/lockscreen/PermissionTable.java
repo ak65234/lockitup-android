@@ -56,8 +56,7 @@ public class PermissionTable extends android.support.v4.app.Fragment {
         RecyclerView.LayoutManager layouter = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layouter);
 
-        //TODO Grab the items from the database
-
+        //Grab the items from the database
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -65,9 +64,6 @@ public class PermissionTable extends android.support.v4.app.Fragment {
                 final List<Users> usersList = dbMapper.scan(Users.class, scanExpression);
                 //result = dbMapper.query(Users.class, queryExpression);
                 System.out.println(usersList.size());
-                for (Users book : usersList) {
-                    System.out.println(book.get_username());
-                }
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -80,12 +76,6 @@ public class PermissionTable extends android.support.v4.app.Fragment {
         };
         Thread mythread = new Thread(runnable);
         mythread.start();
-
-
-
-        //Grab the items from the database here
-       // adapter = new UserAdapter(getActivity(),usersList);
-       // recyclerView.setAdapter(adapter);
     }
 
 }

@@ -60,7 +60,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     //Returns the size of the list
     @Override
     public int getItemCount() {
-        return userList.size();
+        try {
+            return userList.size();
+        }catch (Exception e){
+            return 0;
+        }
     }
 
     class UserViewHolder extends RecyclerView.ViewHolder{
