@@ -26,6 +26,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.mobile.auth.core.internal.util.ThreadUtils;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBQueryExpression;
 import com.amazonaws.mobileconnectors.iot.AWSIotKeystoreHelper;
@@ -45,6 +46,8 @@ import org.json.JSONException;
 
 import java.io.UnsupportedEncodingException;
 import java.security.KeyStore;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -268,6 +271,7 @@ public class MainActivity extends AppCompatActivity
     View.OnClickListener pushToLock = new View.OnClickListener(){
         @Override
         public void onClick(View v){
+
             final String topic = "LockStatus";
             dbMapper = AWSProvider.getInstance().getDyanomoDBMapper();
             try {
@@ -279,7 +283,9 @@ public class MainActivity extends AppCompatActivity
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        Users thisUser = new Users();
+                        final Access_History newAction = new Access_History();
+
+                        final Users thisUser = new Users();
                         thisUser.set_username(User.getInstance().getUsername());
                         thisUser.set_permID(User.getInstance().getPermID());
                         DynamoDBQueryExpression<Users> queryExpression= new DynamoDBQueryExpression<Users>()
@@ -306,10 +312,36 @@ public class MainActivity extends AppCompatActivity
 
                                 }else{
                                     Toast.makeText(getApplicationContext(),"Invalid Permissions",Toast.LENGTH_LONG).show();
+                                    msg = "Unauthorized Attempt";
                                 }
-                                //Tell the DB Access History that someone did something
                             }
                         });
+                        //send the action off
+                        System.out.println("We are sending now");
+                        //Tell the DB Access History that someone did something
+                        String messager;
+                        newAction.set_username(thisUser.get_username());
+                        //Have to repeat above since on different thread
+                        if(result.get(0).get_permID() < 2){
+                            if(currentLockStatus==null){
+                                messager = "Unlocked";
+                            }
+                            else if(currentLockStatus.equals("Locked")){
+                                messager = "Unlocked";
+
+                            }else{
+                                messager = "Locked";
+                            }
+                        }else{
+                            messager = "Unauthorized Attempt";
+                        }
+                        newAction.set_action(messager);
+                        SimpleDateFormat formatted = new SimpleDateFormat("HH:mm yyyy-MM-dd");
+                        Date now = new Date();
+                        String currentTime = formatted.format(now);
+                        System.out.println("Current time is "+currentTime);
+                        newAction.set_time(currentTime);
+                        dbMapper.save(newAction);
                     }
                 }).start();
             } catch (Exception e) {
