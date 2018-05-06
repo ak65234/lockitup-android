@@ -77,13 +77,9 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        //start it connecting automatically
-
-
-
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -133,6 +129,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
+
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
@@ -155,27 +152,30 @@ public class MainActivity extends AppCompatActivity
     public void displaySelectedScreen(int itemId){
 
         Fragment fragment = null;
-        switch (itemId){
-            case R.id.nav_m:
-                fragment = null;
-                startActivity(new Intent(getApplicationContext(),MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                break;
-            case R.id.inventory:
-                fragment = new inventory();
-                break;
-            case R.id.accessHistory:
-                fragment = new frag_access_history();
-                break;
-            case R.id.nav_permission:
-                fragment = new PermissionTable();
-                break;
+        if(User.getInstance().getPermID()!=0){
+            Toast.makeText(this.getApplicationContext(),"Invalid Permissions",Toast.LENGTH_LONG).show();
+        }else{
+            switch (itemId){
+                case R.id.nav_m:
+                    fragment = null;
+                    startActivity(new Intent(getApplicationContext(),MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                    break;
+                case R.id.inventory:
+                    fragment = new inventory();
+                    break;
+                case R.id.accessHistory:
+                    fragment = new frag_access_history();
+                    break;
+                case R.id.nav_permission:
+                    fragment = new PermissionTable();
+                    break;
+            }
+            if (fragment != null) {
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.content_frame, fragment);
+                ft.commit();
+            }
         }
-        if (fragment != null) {
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.content_frame, fragment);
-            ft.commit();
-        }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
     }
