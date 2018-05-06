@@ -1,6 +1,7 @@
 package com.example.cj.lockscreen;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -10,6 +11,9 @@ import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 
 import java.util.List;
 
@@ -56,7 +60,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     //Returns the size of the list
     @Override
     public int getItemCount() {
-        return userList.size();
+        try {
+            return userList.size();
+        }catch (Exception e){
+            return 0;
+        }
     }
 
     class UserViewHolder extends RecyclerView.ViewHolder{
@@ -64,6 +72,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         TextView userName;
         TextView permID;
         LinearLayout parentLayout;
+        TextView emptyText;
         //Constructor
         public UserViewHolder(final View itemView) {
             super(itemView);
@@ -71,7 +80,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             userName = itemView.findViewById(R.id.userName);
             permID = itemView.findViewById(R.id.text_PermissionLevel);
             parentLayout = itemView.findViewById(R.id.perm_parent_Layout_list);
-
+            emptyText = itemView.findViewById(R.id.permission_empty);
+            if(getItemCount()==0){
+                emptyText.setVisibility(View.VISIBLE);
+            }
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View view) {
@@ -98,5 +110,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             });
         }
     }
+
 
 }
