@@ -23,8 +23,10 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.widget.Toast;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.amazonaws.mobileconnectors.iot.AWSIotKeystoreHelper;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttClientStatusCallback;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttLastWillAndTestament;
@@ -263,21 +265,38 @@ public class MainActivity extends AppCompatActivity
         public void onClick(View v){
             final String topic = "LockStatus";
             final String msg;
+            DynamoDBMapper dbMapper = AWSProvider.getInstance().getDyanomoDBMapper();
             try {
                 //TODO Check if their status is correct on the table
                 //TODO Put in access history all
-                if(currentLockStatus==null){
-                    msg = "Unlocked";
-                }
-                else if(currentLockStatus.equals("Locked")){
-                    msg = "Unlocked";
-                    But_Lock.setImageResource(R.drawable.unlocked);
+                /*
+                //QUERY for this user to see what permission levels they are on
+                Users thisUser = new Users();
+                //thisUser.set_username(); set to current
+                DynamoDBQueryExpression<Users> queryExpression= new DynamoDBQueryExpression<Users>()
+                        .withHashKeyValues(thisUser);
+                List<Users> result = dbMapper.query(Users.class, queryExpression);
+                */
+                //check what permission level the user has
+                Users currentUser = dbMapper.load(Users.class, User.getInstance().getUsername(),"PermID");
+                if(currentUser.get_permID() < 2){
+                    if(currentLockStatus==null){
+                        msg = "Unlocked";
+                    }
+                    else if(currentLockStatus.equals("Locked")){
+                        msg = "Unlocked";
+                        But_Lock.setImageResource(R.drawable.unlocked);
 
+                    }else{
+                        msg = "Locked";
+                        But_Lock.setImageResource(R.drawable.locked);
+                    }
+                    mqttManager.publishString(msg, topic, AWSIotMqttQos.QOS0);
                 }else{
-                    msg = "Locked";
-                    But_Lock.setImageResource(R.drawable.locked);
+                    Toast.makeText(getApplicationContext(),"Invalid Permissions",Toast.LENGTH_LONG).show();
                 }
-                mqttManager.publishString(msg, topic, AWSIotMqttQos.QOS0);
+
+
             } catch (Exception e) {
                 Log.e(LOG_TAG, "Publish error.", e);
             }
