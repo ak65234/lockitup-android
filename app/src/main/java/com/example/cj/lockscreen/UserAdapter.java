@@ -7,8 +7,10 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,7 +26,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     private Context mCtx;
     //This is to be a query list from the DB
     private List<Users> userList;
-
+    private Switch permissionSwitch;
+    private DynamoDBMapper dbMapper;
     public UserAdapter(Context mCtx, List<Users> userList) {
         this.mCtx = mCtx;
         this.userList = userList;
@@ -81,35 +84,47 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             permID = itemView.findViewById(R.id.text_PermissionLevel);
             parentLayout = itemView.findViewById(R.id.perm_parent_Layout_list);
             emptyText = itemView.findViewById(R.id.permission_empty);
+            permissionSwitch = itemView.findViewById(R.id.toggle_Permissions);
+
+            //If their are no rows just tell them there is none
             if(getItemCount()==0){
                 emptyText.setVisibility(View.VISIBLE);
             }
-            itemView.setOnClickListener(new View.OnClickListener() {
+            //Permission level 0 is OWNER
+            //1 is SubUser
+            //2 is Restricted
+            permissionSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
-                public void onClick(final View view) {
-                    PopupMenu popupMenu = new PopupMenu(view.getContext(),view);
-                    popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
-
-                    //Here we need to update the table based on the choice
-                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                        public boolean onMenuItemClick(MenuItem item) {
-                            if(item.getTitle().equals("Owner")){
-                                //Update Table
-                            }else if(item.getTitle().equals("Sub-User")){
-                                //Update table
-                            }else if(item.getTitle().equals("Restricted")){
-                                //update table
-                            }
-                            Toast.makeText(view.getContext(),"You Clicked : " + item.getTitle(),Toast.LENGTH_SHORT).show();
-                            return true;
+                public void onCheckedChanged(CompoundButton compoundButton, boolean isOn) {
+                    int newPermissionLevel;
+                    if(isOn == true){
+                        //The switch is on update the user to level 1
+                        newPermissionLevel = 1;
+                    }else{
+                        //The switch is off update the user to level 2
+                        newPermissionLevel = 2;
+                    }
+                    final Users user = new Users();
+                    System.out.println("Permissions level: "+isOn+"  "+ newPermissionLevel);
+                    String username = userName.getText().toString();
+                    user.set_username(username);
+                    user.set_permID(newPermissionLevel);
+                    dbMapper = AWSProvider.getInstance().getDyanomoDBMapper();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //Save the new user to the db with new permissions
+                            dbMapper.save(user);
+                            //TODO check if the password is getting deleted
                         }
-                    });
-                    popupMenu.show();
-                    Toast.makeText(view.getContext(),"Hello", Toast.LENGTH_SHORT).show();
+                    }).start();
+                    permID.setText(Integer.toString(newPermissionLevel));
+
                 }
             });
         }
     }
+
 
 
 }
