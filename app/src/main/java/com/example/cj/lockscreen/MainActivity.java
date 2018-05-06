@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBQueryExpression;
 import com.amazonaws.mobileconnectors.iot.AWSIotKeystoreHelper;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttClientStatusCallback;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttLastWillAndTestament;
@@ -44,7 +45,10 @@ import org.json.JSONException;
 
 import java.io.UnsupportedEncodingException;
 import java.security.KeyStore;
+import java.util.List;
 import java.util.UUID;
+
+import static com.amazonaws.mobile.auth.core.internal.util.ThreadUtils.runOnUiThread;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -65,6 +69,7 @@ public class MainActivity extends AppCompatActivity
     ImageButton But_Connection;
     ImageButton But_Lock;
     TextView CurrentStat;
+    DynamoDBMapper dbMapper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -264,39 +269,49 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onClick(View v){
             final String topic = "LockStatus";
-            final String msg;
-            DynamoDBMapper dbMapper = AWSProvider.getInstance().getDyanomoDBMapper();
+            dbMapper = AWSProvider.getInstance().getDyanomoDBMapper();
             try {
                 //TODO Check if their status is correct on the table
                 //TODO Put in access history all
-                /*
+
                 //QUERY for this user to see what permission levels they are on
-                Users thisUser = new Users();
                 //thisUser.set_username(); set to current
-                DynamoDBQueryExpression<Users> queryExpression= new DynamoDBQueryExpression<Users>()
-                        .withHashKeyValues(thisUser);
-                List<Users> result = dbMapper.query(Users.class, queryExpression);
-                */
-                //check what permission level the user has
-                Users currentUser = dbMapper.load(Users.class, User.getInstance().getUsername(),"PermID");
-                if(currentUser.get_permID() < 2){
-                    if(currentLockStatus==null){
-                        msg = "Unlocked";
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Users thisUser = new Users();
+                        thisUser.set_username(User.getInstance().getUsername());
+                        thisUser.set_permID(User.getInstance().getPermID());
+                        DynamoDBQueryExpression<Users> queryExpression= new DynamoDBQueryExpression<Users>()
+                                .withHashKeyValues(thisUser);
+                        final List<Users> result = dbMapper.query(Users.class, queryExpression);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String msg; //What to tell topic
+                                System.out.println(result.get(0).get_username()+"   \n\n\n"+result.get(0).get_permID());
+                                if(result.get(0).get_permID() < 2){
+                                    if(currentLockStatus==null){
+                                        msg = "Unlocked";
+                                    }
+                                    else if(currentLockStatus.equals("Locked")){
+                                        msg = "Unlocked";
+                                        But_Lock.setImageResource(R.drawable.unlocked);
+
+                                    }else{
+                                        msg = "Locked";
+                                        But_Lock.setImageResource(R.drawable.locked);
+                                    }
+                                    mqttManager.publishString(msg, topic, AWSIotMqttQos.QOS0);
+
+                                }else{
+                                    Toast.makeText(getApplicationContext(),"Invalid Permissions",Toast.LENGTH_LONG).show();
+                                }
+                                //Tell the DB Access History that someone did something
+                            }
+                        });
                     }
-                    else if(currentLockStatus.equals("Locked")){
-                        msg = "Unlocked";
-                        But_Lock.setImageResource(R.drawable.unlocked);
-
-                    }else{
-                        msg = "Locked";
-                        But_Lock.setImageResource(R.drawable.locked);
-                    }
-                    mqttManager.publishString(msg, topic, AWSIotMqttQos.QOS0);
-                }else{
-                    Toast.makeText(getApplicationContext(),"Invalid Permissions",Toast.LENGTH_LONG).show();
-                }
-
-
+                }).start();
             } catch (Exception e) {
                 Log.e(LOG_TAG, "Publish error.", e);
             }
