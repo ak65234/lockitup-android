@@ -154,7 +154,6 @@ public class MainActivity extends AppCompatActivity
     public void displaySelectedScreen(int itemId){
 
         Fragment fragment = null;
-
         switch (itemId){
             case R.id.nav_m:
                 fragment = null;

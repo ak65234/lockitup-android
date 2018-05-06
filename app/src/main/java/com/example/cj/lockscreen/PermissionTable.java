@@ -67,7 +67,6 @@ public class PermissionTable extends android.support.v4.app.Fragment {
                 //result = dbMapper.query(Users.class, queryExpression);
                 System.out.println(usersList.size());
                 for(Users using : usersList){
-
                     System.out.println("Username: "+using.get_username()+" Password: "+using.get_password());
                 }
                 runOnUiThread(new Runnable() {

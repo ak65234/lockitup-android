@@ -26,7 +26,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     private Context mCtx;
     //This is to be a query list from the DB
     private List<Users> userList;
-    private Switch permissionSwitch;
     private DynamoDBMapper dbMapper;
     public UserAdapter(Context mCtx, List<Users> userList) {
         this.mCtx = mCtx;
@@ -50,6 +49,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         final Users user  = userList.get(position);
         holder.userName.setText(user.get_username());
         holder.permID.setText(Integer.toString(user.get_permID()));
+        if(user.get_permID() == 1 || user.get_permID() == 0){
+            holder.permissionSwitch.setChecked(true);
+        }else{
+            holder.permissionSwitch.setChecked(false);
+        }
         /*
         holder.itemView.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -76,6 +80,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         TextView permID;
         LinearLayout parentLayout;
         TextView emptyText;
+        Switch permissionSwitch;
         //Constructor
         public UserViewHolder(final View itemView) {
             super(itemView);
@@ -90,6 +95,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             if(getItemCount()==0){
                 emptyText.setVisibility(View.VISIBLE);
             }
+
             //Permission level 0 is OWNER
             //1 is SubUser
             //2 is Restricted
