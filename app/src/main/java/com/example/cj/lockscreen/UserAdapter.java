@@ -1,6 +1,7 @@
 package com.example.cj.lockscreen;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -10,6 +11,9 @@ import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 
 import java.util.List;
 
@@ -98,5 +102,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             });
         }
     }
+
 
 }

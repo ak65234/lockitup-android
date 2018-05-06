@@ -2,7 +2,11 @@ package com.example.cj.lockscreen;
 
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBAttribute;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBHashKey;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBTable;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+
+import java.util.List;
 
 /**
  * Created by saleh on 5/2/18.
@@ -39,7 +43,4 @@ public class Users {
     public void set_password(final String password){
         this._password = password;
     }
-
-
-
 }
