@@ -30,6 +30,7 @@ public class SignUp extends AppCompatActivity {
     ProgressDialog dialog;
     DynamoDBMapper dbMapper;
     Context context;
+    Thread initUser;
 
 
 
@@ -51,16 +52,22 @@ public class SignUp extends AppCompatActivity {
         AWSProvider.init(context);
 
 
+
+        initUser = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                User.init(name, perm);
+            }
+        });
+
+
+
+
         userAttributes = getSharedPreferences(getString(R.string.usr), Context.MODE_PRIVATE);
         name = userAttributes.getString(USR_PREFERENCE, null);
         perm = userAttributes.getInt(PERM_PREFERENCE, DEFAULT_PERMISSION);
         if (name != null){
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    User.init(name, perm);
-                }
-            }).run();
+            initUser.run();
             Intent intent = new Intent(context, MainActivity.class);
             startActivity(intent);
             finish();
@@ -133,9 +140,8 @@ public class SignUp extends AppCompatActivity {
             editor.putString(USR_PREFERENCE, name);
             editor.putInt(PERM_PREFERENCE, perm);
             editor.commit();
+            initUser.run();
             Intent intent = new Intent(context, MainActivity.class);
-            intent.putExtra(USR_PREFERENCE, name);
-            intent.putExtra(PERM_PREFERENCE, perm);
             dialog.cancel();
             startActivity(intent);
             finish();

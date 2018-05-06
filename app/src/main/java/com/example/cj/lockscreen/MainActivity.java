@@ -104,11 +104,7 @@ public class MainActivity extends AppCompatActivity
         But_Lock = (ImageButton) findViewById(R.id.But_ChangeLockStatus);
         But_Lock.setOnClickListener(pushToLock);
         CurrentStat = (TextView) findViewById(R.id.Text_Status);
-
-        //setting up user singleton class
-         Log.d("TEST_TEST", User.getInstance().getUsername() + " " + User.getInstance().getPermID().toString());
-         But_Connection.callOnClick();
-
+        But_Connection.callOnClick();
     }
 
     @Override
