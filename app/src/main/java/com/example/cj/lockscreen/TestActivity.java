@@ -51,7 +51,7 @@ public class TestActivity extends AppCompatActivity {
         Button submitBtn = (Button) findViewById(R.id.sumbitBtn);
 
 
-        //editText.setText("This is Saleh :)");
+        
 
         //mIotAndroidClient = new AWSIotClient(AWSProvider.getInstance().getIdentityManager().getCredentialsProvider());
 
